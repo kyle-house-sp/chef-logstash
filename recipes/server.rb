@@ -18,7 +18,7 @@ end
 
 remote_file "Copy cert chain" do
   path "/etc/logstash/keys/DigiCertCA.crt"
-  source "/etc/ssl/certs/DigiCertCA.crt"
+  source "file:///etc/ssl/certs/DigiCertCA.crt"
   owner 'logstash'
   group 'logstash'
   mode "0400"
@@ -26,7 +26,7 @@ end
 
 remote_file "Copy ssh cert" do
   path "/etc/logstash/keys/#{node['service']['ssl_key_name']}.crt"
-  source "/etc/ssl/certs/#{node['service']['ssl_key_name']}.crt"
+  source "file:///etc/ssl/certs/#{node['service']['ssl_key_name']}.crt"
   owner 'logstash'
   group 'logstash'
   mode "0400"
@@ -34,7 +34,7 @@ end
 
 remote_file "/etc/logstash/keys/#{node['service']['ssl_key_name']}.key" do
   path "/etc/logstash/keys/#{node['service']['ssl_key_name']}.key"
-  source "/etc/ssl/private/#{node['service']['ssl_key_name']}.key"
+  source "file:///etc/ssl/private/#{node['service']['ssl_key_name']}.key"
   owner 'logstash'
   group 'logstash'
   mode "0400"
