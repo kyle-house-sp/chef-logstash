@@ -6,9 +6,9 @@ input {
     port => 6514
     type => syslog
     ssl_enable => true
-    ssl_cacert => "/etc/logstash/DigiCertCA.crt"
-    ssl_cert => "/etc/logstash/<%= node['service']['ssl_key_name'] %>.crt"
-    ssl_key => "/etc/logstash/<%= node['service']['ssl_key_name'] %>.key"
+    ssl_cacert => "/etc/logstash/keys/DigiCertCA.crt"
+    ssl_cert => "/etc/logstash/keys/<%= node['service']['ssl_key_name'] %>.crt"
+    ssl_key => "/etc/logstash/keys/<%= node['service']['ssl_key_name'] %>.key"
   }
 }
 
