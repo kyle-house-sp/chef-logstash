@@ -6,6 +6,9 @@
 # 
 # License: MIT
 #
+template "/opt/logstash/patterns/token" do
+  source "token_pattern.erb"
+end
 
 template "/etc/logstash/conf.d/server.conf" do
   source "logstash.conf.erb"
