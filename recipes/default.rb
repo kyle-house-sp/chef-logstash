@@ -22,36 +22,6 @@ directory "/etc/logstash/conf.d" do
   mode "0755"
 end
 
-directory "/etc/logstash/keys" do
-  owner "logstash"
-  group "logstash"
-  mode "0600"
-end
-
-file "/etc/logstash/keys/DigiCertCA.crt" do
-  owner 'logstash'
-  group 'logstash'
-  mode "0400"
-  content ::File.open("/etc/ssl/certs/DigiCertCA.crt").read
-  action :create
-end
-
-file "/etc/logstash/keys/#{node['service']['ssl_key_name']}.crt" do
-  owner 'logstash'
-  group 'logstash'
-  mode "0400"
-  content ::File.open("/etc/ssl/certs/#{node['service']['ssl_key_name']}.crt").read
-  action :create
-end
-
-file "/etc/logstash/keys/#{node['service']['ssl_key_name']}.key" do
-  owner 'logstash'
-  group 'logstash'
-  mode "0400"
-  content ::File.open("/etc/ssl/private/#{node['service']['ssl_key_name']}.key").read
-  action :create
-end
-
 directory "/var/lib/monit" do
   owner "logstash"
   group "logstash"
