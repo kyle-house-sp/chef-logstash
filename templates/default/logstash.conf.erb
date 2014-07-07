@@ -2,12 +2,9 @@
 # by Chef
 # Manual changes will be lost
 input {
-  tcp {
+  lumberjack {
     port => 6514
-    type => syslog
-    ssl_enable => true
-    ssl_cacert => "/etc/ssl/certs/DigiCertCA.crt"
-    ssl_cert => "/etc/ssl/certs/<%= node['service']['ssl_key_name'] %>.crt"
+    ssl_certificate => "/etc/ssl/certs/<%= node['service']['ssl_key_name'] %>.crt"
     ssl_key => "/etc/ssl/private/<%= node['service']['ssl_key_name'] %>.key"
   }
 }
@@ -15,7 +12,8 @@ input {
 filter {
   if [type] == "syslog" {
     grok {
-      match => { "message" => "%{URIHOST}:%{BASE16FLOAT}%{ISO8601_TIMEZONE} %{TOKEN:token} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}: %{GREEDYDATA:syslog_message}" }
+      #match => { "message" => "%{URIHOST}:%{BASE16FLOAT}%{ISO8601_TIMEZONE} %{TOKEN:token} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}: %{GREEDYDATA:syslog_message}" }
+      match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}: %{GREEDYDATA:syslog_message}" }
       add_field => [ "received_at", "%{@timestamp}" ]
       add_field => [ "received_from", "%{host}" ]
     }

@@ -32,6 +32,12 @@ file "/etc/ssl/private/#{node['service']['ssl_key_name']}.key" do
   mode '0400'
 end
 
+template "/etc/init/logstash.conf" do
+  source "init_logstash.conf.erb"
+  variables( :config => node[:logstash][:server] )
+  notifies :restart, "service[logstash]"
+end
+
 template "/etc/logstash/conf.d/server.conf" do
   source "logstash.conf.erb"
   variables( :config => node[:logstash][:server] )
