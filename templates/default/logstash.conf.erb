@@ -31,20 +31,20 @@ filter {
 }
 
 filter {
-if [syslog_message] =~ /{.*}/ {
+  if [syslog_message] =~ /{.*}/ {
     json {
       source => "syslog_message"
     }
   }
 }
 
-filter {
-  if [syslog_message] =~ /noConfig.jsp/ {
-    mutate {
-      add_tag => ['alert']
-    }
-  }
-}
+#filter {
+#  if [syslog_message] =~ /noConfig.jsp/ {
+#    mutate {
+#      add_tag => ['alert']
+#    }
+#  }
+#}
 
 output {
   elasticsearch {
