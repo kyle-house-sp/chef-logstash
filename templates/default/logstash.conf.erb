@@ -38,6 +38,12 @@ filter {
   }
 }
 
+filter {
+  geoip {
+    source => [x_forwarded_for]
+  }
+}
+
 #filter {
 #  if [syslog_message] =~ /noConfig.jsp/ {
 #    mutate {
