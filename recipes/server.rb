@@ -8,6 +8,8 @@
 #
 template "/opt/logstash/patterns/token" do
   source "token_pattern.erb"
+  owner 'logstash'
+  group 'logstash'
 end
 
 directory "/etc/ssl/private" do
