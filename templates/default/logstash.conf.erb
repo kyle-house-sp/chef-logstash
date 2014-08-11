@@ -10,9 +10,14 @@ input {
 }
 
 filter {
+  if [token] != "<%= node['logstash']['token'] %>" {
+    drop { }
+  }
+}
+
+filter {
   if [type] == "syslog" {
     grok {
-      #match => { "message" => "%{URIHOST}:%{BASE16FLOAT}%{ISO8601_TIMEZONE} %{TOKEN:token} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}: %{GREEDYDATA:syslog_message}" }
       match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}: %{GREEDYDATA:syslog_message}" }
       add_field => [ "received_at", "%{@timestamp}" ]
       add_field => [ "received_from", "%{host}" ]
@@ -25,8 +30,14 @@ filter {
 }
 
 filter {
-  if [token] != "<%= node['logstash']['token'] %>" {
-    drop { }
+  if [pod] in [ "canon", "cook", "bere", "fiji", "timor" ] {
+    mutate {
+      add_tag => ["prod"]
+    }
+  } else {
+    mutate {
+      add_tag => ["dev"]
+    }
   }
 }
 
@@ -39,28 +50,57 @@ filter {
 }
 
 filter {
-  geoip {
-    source => [x_forwarded_for]
+  if "ip" in [tags] {
+    geoip {
+      source => [ip]
+    }
   }
 }
 
-#filter {
-#  if [syslog_message] =~ /noConfig.jsp/ {
-#    mutate {
-#      add_tag => ['alert']
-#    }
-#  }
-#}
+filter {
+  if [syslog_message] =~ /noConfig.jsp/ {
+    mutate {
+      add_tag => ["alert"]
+    }
+  }
+}
+
+filter {
+  metrics {
+    meter => "events"
+    add_tag => "metric"
+  }
+}
 
 output {
+  datadog_metrics {
+    api_key => "<%= node['datadog']['api_key'] %>"
+    metric_name => "logstash.events.rate_5m"
+    metric_type => "counter"
+    metric_value => "%{events.rate_5m}"
+  }
+  datadog_metrics {
+    api_key => "<%= node['datadog']['api_key'] %>"
+    metric_name => "logstash.events.count"
+    metric_type => "counter"
+    metric_value => "%{events.count}"
+  }
   elasticsearch {
     host => "<%= node['logstash']['es_endpoint'] %>"
     cluster => "<%= node['logstash']['es_cluster'] %>"
   }
-  if 'alert' in [tags]  {
+  if "alert" in [tags] and "prod" in [tags] {
     pagerduty {
-      service_key => '3483262c595743a7a2ebb96b298ba93d'
-      description => 'No Configuration Found'
+      service_key => "3483262c595743a7a2ebb96b298ba93d"
+      description => "No Configuration Found"
+    }
+  }
+  if "alert" in [tags] {
+    hipchat {
+      token   => "c50711d68aa41adf1c642bd3947066"
+      room_id => "Datadog-%{pod}"
+      format  => "%{pod}: %{syslog_message}"
+      color   => "red"
     }
   }
 }
