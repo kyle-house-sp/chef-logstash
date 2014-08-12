@@ -89,17 +89,17 @@ output {
     host => "<%= node['logstash']['es_endpoint'] %>"
     cluster => "<%= node['logstash']['es_cluster'] %>"
   }
-  if "alert" in [tags] and "prod" in [tags] {
-    pagerduty {
-      service_key => "3483262c595743a7a2ebb96b298ba93d"
-      description => "No Configuration Found"
-    }
-  }
+  #if "alert" in [tags] and "prod" in [tags] {
+  #  pagerduty {
+  #    service_key => "3483262c595743a7a2ebb96b298ba93d"
+  #    description => "No Configuration Found"
+  #  }
+  #}
   if "alert" in [tags] {
     hipchat {
       token   => "c50711d68aa41adf1c642bd3947066"
       room_id => "Datadog-%{pod}"
-      format  => "%{pod}: %{syslog_message}"
+      format  => "@devops %{pod}: %{syslog_message}"
       color   => "red"
     }
   }
