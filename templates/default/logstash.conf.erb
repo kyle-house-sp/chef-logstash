@@ -73,26 +73,26 @@ filter {
   }
 }
 
-filter {
-  metrics {
-    meter => "events"
-    add_tag => "metric"
-  }
-}
+#filter {
+#  metrics {
+#    meter => "events"
+#    add_tag => "metric"
+#  }
+#}
 
 output {
-  datadog_metrics {
-    api_key => "<%= node['datadog']['api_key'] %>"
-    metric_name => "logstash.events.rate_5m"
-    metric_type => "counter"
-    metric_value => "%{events.rate_5m}"
-  }
-  datadog_metrics {
-    api_key => "<%= node['datadog']['api_key'] %>"
-    metric_name => "logstash.events.count"
-    metric_type => "counter"
-    metric_value => "%{events.count}"
-  }
+  #datadog_metrics {
+  #  api_key => "<%= node['datadog']['api_key'] %>"
+  #  metric_name => "logstash.events.rate_5m"
+  #  metric_type => "counter"
+  #  metric_value => "%{events.rate_5m}"
+  #}
+  #datadog_metrics {
+  #  api_key => "<%= node['datadog']['api_key'] %>"
+  #  metric_name => "logstash.events.count"
+  #  metric_type => "counter"
+  #  metric_value => "%{events.count}"
+  #}
   elasticsearch {
     host => "<%= node['logstash']['es_endpoint'] %>"
     cluster => "<%= node['logstash']['es_cluster'] %>"
