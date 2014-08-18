@@ -30,7 +30,15 @@ filter {
 }
 
 filter {
-  if [pod] in [ "canon", "cook", "bere", "fiji", "timor" ] {
+  multiline {
+    pattern => "^%{SYSLOGTIMESTAMP}"
+    negate => true
+    what => previous
+  }
+}
+
+filter {
+  if [pod] in [ "bere", "fiji", "timor" ] {
     mutate {
       add_tag => ["prod"]
     }
