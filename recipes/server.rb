@@ -40,10 +40,51 @@ template "/etc/init/logstash.conf" do
   notifies :restart, "service[logstash]"
 end
 
+Chef::Log.info node["opsworks"]["instance"]["layers"][0] 
+
 template "/etc/logstash/conf.d/server.conf" do
   source "logstash.conf.erb"
   owner 'logstash'
   group 'logstash'
   variables( :config => node[:logstash][:server] )
   notifies :restart, "service[logstash]"
+  only_if { node["opsworks"]["instance"]["layers"][0] == 'logstash' }
 end
+
+directory "/opt/bin" do
+  owner 'logstash'
+  group 'logstash'
+  mode '0755'
+end
+
+template "/opt/bin/extract_contrib.sh" do
+  source 'extract_contrib.sh.erb'
+  owner 'logstash'
+  group 'logstash'
+  mode '0755'
+  action :create_if_missing
+end
+
+remote_file "/opt/logstash/logstash-contrib.tar.gz" do
+  source node[:logstash][:contrib_link]
+  owner 'logstash'
+  group 'logstash'
+  only_if { node["opsworks"]["instance"]["layers"][0] == 'logstash-cloudtrail' }
+  notifies :run, "bash[extract-contrib]"
+end
+
+bash 'extract-contrib' do
+  code '/opt/bin/extract_contrib.sh'
+  user 'logstash'
+  group 'logstash'
+  action :nothing
+end
+
+template "/etc/logstash/conf.d/server-cloudtrail.conf" do
+  source "cloudtrail.conf.erb"
+  owner 'logstash'
+  group 'logstash'
+  notifies :restart, "service[logstash]"
+  only_if { node["opsworks"]["instance"]["layers"][0] == 'logstash-cloudtrail' }
+end
+

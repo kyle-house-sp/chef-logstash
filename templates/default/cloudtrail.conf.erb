@@ -1,0 +1,26 @@
+# This file was created for logstash1.localdomain
+# by Chef
+# Manual changes will be lost
+input {
+	s3 {
+		backup_to_dir => "/tmp/logstashed/"
+                bucket => "<%= node['logstash']['ct_bucket'] %>"
+		delete => false
+		interval => 60
+                prefix => "<%= node['logstash']['ct_prefix'] %>" 
+                credentials => ["<%= node['logstash']['ct_access'] %>","<%= node['logstash']['ct_secret'] %>"]
+		region_endpoint => "us-east-1"
+		sincedb_path => "/tmp/s3.sincedb"
+		tags => ["s3", "cloudtrail"]
+                add_field => [ "token", "<%= node['logstash']['token'] %>" ]
+                codec => cloudtrail
+		type => "cloudtrail"
+	}
+}
+
+output {
+  file { 
+    codec => rubydebug
+    path => "/tmp/ctresults.log"
+  }
+}
