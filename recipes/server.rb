@@ -57,6 +57,14 @@ directory "/opt/bin" do
   mode '0755'
 end
 
+directory "/vol/cloudtrail/timestamp" do
+  owner 'logstash'
+  group 'logstash'
+  mode '0755'
+  action :create
+  only_if { node["opsworks"]["instance"]["layers"][0] == 'logstash-cloudtrail' }
+end
+
 template "/opt/bin/extract_contrib.sh" do
   source 'extract_contrib.sh.erb'
   owner 'logstash'
