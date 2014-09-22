@@ -1,0 +1,29 @@
+# This file was created for <%= node.name %>
+# by Chef
+# Manual changes will be lost
+input {
+	s3 {
+                bucket => "<%= node['logstash']['ct_bucket'] %>"
+		delete => false
+		interval => 60
+                prefix => "<%= node['logstash']['ct_prefix'] %>" 
+                credentials => ["<%= node['logstash']['ct_access'] %>","<%= node['logstash']['ct_secret'] %>"]
+		sincedb_path => "/vol/cloudtrail/timestamp/s3.sincedb"
+		tags => ["cloudtrail"]
+                add_field => [ "token", "<%= node['logstash']['token'] %>" ]
+                codec => cloudtrail
+		type => "cloudtrail"
+	}
+}
+
+output {
+  #file { 
+  #  codec => rubydebug
+  #  path => "/tmp/ctresults.log"
+  #}
+  elasticsearch {
+    codec => rubydebug
+    host => "<%= node['logstash']['es_endpoint'] %>"
+    cluster => "<%= node['logstash']['es_cluster'] %>"
+  }
+}
