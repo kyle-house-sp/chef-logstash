@@ -73,6 +73,12 @@ filter {
   }
 }
 
+filter {
+  mutate {
+    remove_field => ["token"]
+  }
+}
+
 #filter {
 #  metrics {
 #    meter => "events"
