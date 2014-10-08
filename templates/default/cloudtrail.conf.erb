@@ -10,7 +10,6 @@ input {
                 credentials => ["<%= node['logstash']['ct_access'] %>","<%= node['logstash']['ct_secret'] %>"]
 		sincedb_path => "/vol/cloudtrail/timestamp/s3.sincedb"
 		tags => ["cloudtrail"]
-                add_field => [ "token", "<%= node['logstash']['token'] %>" ]
                 codec => cloudtrail
 		type => "cloudtrail"
 	}
