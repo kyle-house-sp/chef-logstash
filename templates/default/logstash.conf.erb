@@ -50,7 +50,7 @@ filter {
 }
 
 filter {
-  if [syslog_message] =~ /{.*}/ {
+  if [syslog_message] =~ /{\s?"[^"]*":\s?"[^"]*".*/ {
     json {
       source => "syslog_message"
     }
