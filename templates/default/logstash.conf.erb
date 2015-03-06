@@ -79,12 +79,24 @@ filter {
   }
 }
 
-#filter {
-#  metrics {
-#    meter => "events"
-#    add_tag => "metric"
-#  }
-#}
+filter {
+  if [syslog_program] =~ /tomcat_catalina_.*/ {
+    mutate {
+      gsub => [
+        "syslog_program", "tomcat_catalina_", ""
+      ]
+      add_field => {
+        "org" => "%{syslog_program}"
+      }
+      remove_field => ["syslog_program"]
+    }
+    mutate {
+      add_field => {
+        "syslog_program" => "tomcat_catalina"
+      }
+    }
+  }
+}
 
 output {
   #datadog_metrics {
